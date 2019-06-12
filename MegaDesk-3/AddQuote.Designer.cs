@@ -1,4 +1,4 @@
-﻿namespace MegaDesk_3
+namespace MegaDesk_3
 {
     partial class AddQuote
     {
