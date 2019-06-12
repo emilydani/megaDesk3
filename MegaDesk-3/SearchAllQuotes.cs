@@ -1,8 +1,10 @@
-﻿using System;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,46 +21,48 @@ namespace MegaDesk_3
         {
             InitializeComponent();
             mainMenu = mainMenuForm;
+            SearchComboBox.DataSource = Enum.GetValues(typeof(Desk.DesktopMaterial));
         }
 
-        public string getSearchBy() {
-            return this.searchBy = this.SearchComboBox.Text;
-        }
 
 
         private void Search_Click(object sender, EventArgs e)
         {
+            quoteGrid.Rows.Clear();
             DeskQuote deskQuote = new DeskQuote();
             List<DeskQuote> deskQuotes = new List<DeskQuote>();
 
-            deskQuotes = deskQuote.searchQuotes("Quotes.json", this.searchBy, this);
 
-            this.Results.AppendText("Date" + "\t\t");
-            this.Results.AppendText("Client" + "\t");
-            this.Results.AppendText("Depth" + "\t");
-            this.Results.AppendText("Width" + "\t");
-            this.Results.AppendText("Sice" + "\t");
-            this.Results.AppendText("Material" + "\t\t");
-            this.Results.AppendText("Price" + "\n");
+            using (StreamReader r = new StreamReader("Quotes.json"))
+            {
 
-            for (int i = 0; i < deskQuotes.Count; i++) {
 
-                this.Results.AppendText(deskQuotes.ElementAt(i).date + "\t");
-                this.Results.AppendText(deskQuotes.ElementAt(i).clientName + "\t");
-                this.Results.AppendText(deskQuotes.ElementAt(i).desk.width + "\t");
-                this.Results.AppendText(deskQuotes.ElementAt(i).desk.depth + "\t");
-                this.Results.AppendText(deskQuotes.ElementAt(i).desk.size + "\t");
-                if (deskQuotes.ElementAt(i).desk.material.Equals("Rossewood"))
+                while (!r.EndOfStream)
                 {
-                    this.Results.AppendText(deskQuotes.ElementAt(i).desk.material + "\t");
+                    deskQuote = JsonConvert.DeserializeObject<DeskQuote>(r.ReadLine());
+                    deskQuotes.Add(deskQuote);
                 }
-                else {
-                    this.Results.AppendText(deskQuotes.ElementAt(i).desk.material + "\t\t");
+
+                foreach (DeskQuote derp in deskQuotes)
+                {
+                    if(derp.desk.material == SearchComboBox.Text)
+                    {
+                        String[] herp = new String[8];
+                        herp[0] = derp.date;
+                        herp[1] = derp.clientName;
+                        herp[2] = derp.desk.width.ToString();
+                        herp[3] = derp.desk.depth.ToString();
+                        herp[4] = derp.desk.numOfDrawers.ToString();
+                        herp[5] = derp.desk.material;
+                        herp[6] = derp.rushDays.ToString();
+                        herp[7] = derp.price.ToString();
+                        quoteGrid.Rows.Add(herp);
+                    }
+                    
                 }
-                this.Results.AppendText( "$" + string.Format("{0:n0}",deskQuotes.ElementAt(i).price) + "\n");
+                
             }
 
-            this.Search.Enabled = false;
         }
 
         private void MainMenuButton_Click(object sender, EventArgs e)
