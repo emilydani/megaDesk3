@@ -1,4 +1,4 @@
-﻿namespace MegaDesk_3
+namespace MegaDesk_3
 {
     partial class MainMenuForm
     {
@@ -91,6 +91,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainMenuForm";
             this.Text = "Mega Desk";
+            this.Load += new System.EventHandler(this.MainMenuForm_Load);
             this.ResumeLayout(false);
 
         }
